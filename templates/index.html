@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecommerce Recommendation System</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <style>
+        body { background-color: #f8f9fa; }
+
+        .navbar { box-shadow: 0px 4px 8px rgba(0,0,0,0.1); }
+
+        .video-background {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+
+        .card {
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand mx-auto" href="#"><b>Ecommerce Recommendation System</b></a>
+</nav>
+
+<!-- VIDEO -->
+<div class="carousel">
+    <video class="video-background" autoplay loop muted>
+        <source src="{{ video_url }}" type="video/mp4">
+    </video>
+</div>
+
+<!-- BUTTON -->
+<div class="text-center mt-4">
+    <a href="/main" class="btn btn-primary btn-lg">Go To Main Page</a>
+</div>
+
+{% if signup_message %}
+<h5 class="text-center mt-3">{{ signup_message }}</h5>
+{% endif %}
+
+<!-- TRENDING PRODUCTS -->
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Trending Products</h2>
+
+    <div class="row">
+
+        {% for product in trending_products %}
+
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+            <div class="card">
+
+                <img src="{{ product['ImageURL'] }}"
+                     class="card-img-top"
+                     style="height:200px; object-fit:cover;"
+                     >
+
+                <div class="card-body">
+                    <h5 class="card-title">
+                        {{ truncate(product['Name'], 20) }}
+                    </h5>
+
+                    <p class="card-text">
+                        <strong>Brand:</strong> {{ product['Brand'] }}
+                    </p>
+
+                    <p>
+                        ⭐ {{ product['Rating'] }}
+                    </p>
+
+                    <p>
+                        Reviews: {{ product['ReviewCount'] }}
+                    </p>
+
+                    <button class="btn btn-primary btn-block"
+                            data-toggle="modal"
+                            data-target="#modal{{ loop.index }}">
+                        View Details
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL -->
+        <div class="modal fade" id="modal{{ loop.index }}">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5>{{ product['Name'] }}</h5>
+                        <button class="close" data-dismiss="modal">&times;</button>
+                    </div>
+
+                    <div class="modal-body">
+                        <img src="{{ product['ImageURL'] }}" class="img-fluid mb-3">
+
+                        <p><strong>Brand:</strong> {{ product['Brand'] }}</p>
+                        <p><strong>Rating:</strong> {{ product['Rating'] }}</p>
+                        <p><strong>Reviews:</strong> {{ product['ReviewCount'] }}</p>
+
+                        <p><strong>Description:</strong></p>
+                        <p>{{ product['Tags'] }}</p>
+
+                        <p><strong>Price:</strong> ₹{{ 100 + loop.index * 20 }}</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        {% endfor %}
+
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="bg-dark text-white mt-5 p-4 text-center">
+    © 2026 Ecommerce Recommendation System
+</footer>
+
+<!-- JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Recommendations</title>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+
+body {
+    background: #f1f3f6;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* NAVBAR */
+.navbar {
+    background: linear-gradient(90deg, #141e30, #243b55);
+    color: white;
+}
+
+.navbar-brand {
+    color: white !important;
+    font-weight: bold;
+}
+
+/* SEARCH BOX */
+.search-box {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
+}
+
+/* CARD */
+.card {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: 0.3s;
+    background: white;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0px 8px 25px rgba(0,0,0,0.15);
+}
+
+.card img {
+    border-bottom: 1px solid #eee;
+}
+
+/* BUTTON */
+.btn-primary {
+    border-radius: 25px;
+    background: linear-gradient(90deg, #ff7e5f, #feb47b);
+    border: none;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+}
+
+/* RATING */
+.rating {
+    color: #f39c12;
+    font-weight: bold;
+}
+
+/* MODAL */
+.modal-content {
+    border-radius: 15px;
+}
+
+/* FOOTER */
+footer {
+    background: #141e30;
+    color: white;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand mx-auto" href="#">🛒 Smart Recommender</a>
+</nav>
+
+<!-- SEARCH -->
+<div class="container mt-4">
+    <div class="search-box">
+        <form action="/recommendations" method="post" class="d-flex">
+            <input type="text" class="form-control mr-2" name="prod" placeholder="🔍 Search products..." required>
+            <input type="number" class="form-control mr-2" name="nbr" placeholder="No." style="width:100px;" required>
+            <button class="btn btn-primary">Search</button>
+        </form>
+    </div>
+</div>
+
+{% if message %}
+<h5 class="text-center mt-3 text-danger">{{ message }}</h5>
+{% endif %}
+
+<!-- RESULTS -->
+{% if content_based_rec %}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">✨ Recommended For You</h2>
+
+    <div class="row">
+
+        {% for product in content_based_rec %}
+
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+            <div class="card">
+
+                <img src="{{ product['ImageURL'] }}"
+                     style="height:200px; object-fit:cover;"
+                     onerror="this.src='https://via.placeholder.com/200'">
+
+                <div class="card-body text-center">
+                    <h6>{{ truncate(product['Name'], 30) }}</h6>
+
+                    <p class="text-muted">{{ product['Brand'] }}</p>
+
+                    <p class="rating">⭐ {{ product['Rating'] }}</p>
+
+                    <p><strong>₹{{ 100 + loop.index * 30 }}</strong></p>
+
+                    <button class="btn btn-primary btn-sm"
+                            data-toggle="modal"
+                            data-target="#modal{{ loop.index }}">
+                        View
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- MODAL -->
+        <div class="modal fade" id="modal{{ loop.index }}">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+
+                    <div class="modal-body">
+
+                        <div class="row">
+
+                            <div class="col-md-5">
+                                <img src="{{ product['ImageURL'] }}"
+                                     class="img-fluid"
+                                     onerror="this.src='https://via.placeholder.com/300'">
+                            </div>
+
+                            <div class="col-md-7">
+                                <h4>{{ product['Name'] }}</h4>
+
+                                <p class="text-muted">{{ product['Brand'] }}</p>
+
+                                <p class="rating">⭐ {{ product['Rating'] }}</p>
+
+                                <p><strong>Reviews:</strong> {{ product['ReviewCount'] }}</p>
+
+                                <h5 class="mt-3">₹{{ 100 + loop.index * 30 }}</h5>
+
+                                <button class="btn btn-primary mt-3">Add to Cart</button>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        {% endfor %}
+
+    </div>
+</div>
+
+{% endif %}
+
+<!-- FOOTER -->
+<footer class="text-center p-4 mt-5">
+    © 2026 Smart Recommendation System
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
