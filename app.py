@@ -11,7 +11,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 app = FastAPI()
 
-# ================= STATIC + TEMPLATES =================
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
@@ -19,11 +18,9 @@ templates = Jinja2Templates(directory="templates")
 # ================= LOAD DATA =================
 train_data = pd.read_csv("product_recommendation.csv")
 
-# clean dataset
 train_data = train_data.drop(columns=["Unnamed: 0"], errors='ignore')
 train_data = train_data.dropna(subset=['Name','Tags'])
 
-# trending products (top 20)
 trending_products = train_data.head(20)
 
 
@@ -33,12 +30,10 @@ tfidf_matrix = tfidf.fit_transform(train_data['Tags'])
 cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
 
 
-# ================= UTIL =================
 def truncate(text, length=25):
     return text[:length] + "..." if len(text) > length else text
 
 
-# ================= RECOMMEND =================
 def content_based_recommendations(item_name, top_n=10):
 
     item_name = item_name.strip().lower()
@@ -46,7 +41,7 @@ def content_based_recommendations(item_name, top_n=10):
     matches = train_data[train_data['Name'].str.lower().str.contains(item_name, na=False)]
 
     if matches.empty:
-        print("❌ No match found:", item_name)
+        print(" No match found:", item_name)
         return pd.DataFrame()
 
     idx = matches.index[0]
@@ -58,7 +53,6 @@ def content_based_recommendations(item_name, top_n=10):
     indices = [i[0] for i in top_items]
 
     return train_data.iloc[indices][['Name','ReviewCount','Brand','ImageURL','Rating']]
-# ================= ROUTES =================
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
@@ -75,7 +69,6 @@ async def main_page(request: Request):
     return templates.TemplateResponse("main.html", {"request": request})
 
 
-# ================= RECOMMEND =================
 @app.post("/recommendations", response_class=HTMLResponse)
 async def recommendations(
     request: Request,
@@ -96,8 +89,6 @@ async def recommendations(
         "truncate": truncate
     })
 
-
-# ================= RUN =================
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("app:app", host="127.0.0.1", port=8000)
