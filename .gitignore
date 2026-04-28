@@ -1,1 +1,2 @@
-*.csv
+# CSV files are included for reproducibility
+# *.csv
